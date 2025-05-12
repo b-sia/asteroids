@@ -18,8 +18,6 @@ class Player(CircleShape):
         self.friction = 0.99  # dampens velocity
         self.angle = 0
 
-        Player.containers = None
-
     def rotate(self, direction: float, dt):
         """Rotate the player (direction: 1 for right, -1 for left)"""
         self.angle += self.rotation_speed * direction * dt

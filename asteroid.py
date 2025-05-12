@@ -5,7 +5,7 @@ from circleshape import CircleShape
 
 class Asteroid(CircleShape):
     def __init__(self, x, y, radius):
-        Asteroid.containers = None
+        pass
 
     def draw(self, screen, position, radius, width=2):
         pygame.draw.circle(
