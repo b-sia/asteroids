@@ -1,13 +1,13 @@
-from constants import *
 import pygame
-from player import Player
-from asteroid import Asteroid
-from asteroid_field import AsteroidField
-
 from pygame import Vector2
 
-def main():
+from asteroid import Asteroid
+from asteroid_field import AsteroidField
+from constants import *
+from player import Player
 
+
+def main():
     pygame.init()
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -31,7 +31,7 @@ def main():
 
     # need to instantiate so that objects
     # are added to containers
-    player = Player(Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+    player = Player(Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
     asteroid_field = AsteroidField()
 
     while running:
@@ -41,7 +41,7 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-        
+
         screen.fill((0, 0, 0))
 
         updatable.update(dt)

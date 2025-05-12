@@ -1,8 +1,10 @@
+import math
+
+import pygame
 from pygame import Vector2
+
 from circleshape import CircleShape
 from constants import *
-import math
-import pygame
 
 
 class Player(CircleShape):
@@ -11,9 +13,9 @@ class Player(CircleShape):
         super().__init__(pos, 15, radius=radius)
 
         self.velocity = Vector2(0, 0)
-        self.acceleration = 200.0 # pixels per second squared
-        self.rotation_speed = 180 # degrees/s
-        self.friction = 0.99 # dampens velocity
+        self.acceleration = 200.0  # pixels per second squared
+        self.rotation_speed = 180  # degrees/s
+        self.friction = 0.99  # dampens velocity
         self.angle = 0
 
         Player.containers = None
@@ -22,7 +24,7 @@ class Player(CircleShape):
         """Rotate the player (direction: 1 for right, -1 for left)"""
         self.angle += self.rotation_speed * direction * dt
         # self.angle = PLAYER_TURNED_SPEED * dt
-        self.angle %= 360 # keep angle between 0 and 360
+        self.angle %= 360  # keep angle between 0 and 360
 
     def thrust(self, dt: float):
         """Apply thrust in the direction the player is facing"""
@@ -60,7 +62,7 @@ class Player(CircleShape):
             self.position.x = SCREEN_WIDTH
         elif self.position.x > SCREEN_WIDTH:
             self.position.x = 0
-            
+
         if self.position.y < 0:
             self.position.y = SCREEN_HEIGHT
         elif self.position.y > SCREEN_HEIGHT:

@@ -1,5 +1,6 @@
 import pygame
 
+
 # Base class for game objects
 class CircleShape(pygame.sprite.Sprite):
     def __init__(self, x, y, radius):
@@ -14,10 +15,7 @@ class CircleShape(pygame.sprite.Sprite):
         self.radius = radius
 
     def draw(self, screen, triangle):
-        pygame.draw.polygon(screen, 
-                            color="white",
-                            points=triangle,
-                            width=2)
+        pygame.draw.polygon(screen, color="white", points=triangle, width=2)
 
     def update(self, dt):
         pass
