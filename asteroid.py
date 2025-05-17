@@ -12,7 +12,7 @@ class Asteroid(CircleShape):
         # Return points for circle approximation
         # Return points for drawing a polygon that looks like a circle
         points = []
-        num_points = 8  # More points = smoother circle
+        num_points = 20  # More points = smoother circle
         for i in range(num_points):
             angle = i * (360 / num_points)
             point = pygame.Vector2(0, -self.radius).rotate(angle) + self.position
