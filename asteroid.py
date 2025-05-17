@@ -1,3 +1,4 @@
+import math
 import random
 
 import pygame
@@ -11,14 +12,40 @@ class Asteroid(CircleShape):
         super().__init__(x, y, radius)
         self.velocity = pygame.Vector2(0, 0)
 
+        # Create fewer control points for smoother interpolation
+        self.num_control_points = 8
+        self.control_points = [
+            random.uniform(0.8, 1.2) for _ in range(self.num_control_points)
+        ]
+
+        # add first point to end to wrap the interpolation around
+        self.control_points.append(self.control_points[0])
+
+    def interpolate(self, t):
+        segment = t * self.num_control_points
+        i = int(segment)
+        f = segment - i
+
+        # smooth step function for organic transitions
+        f = f * f * (3 - 2 * f)
+
+        return self.control_points[i] * (1 - f) + self.control_points[i + 1] * f
+
     def triangle(self):
         # Return points for circle approximation
         # Return points for drawing a polygon that looks like a circle
         points = []
-        num_points = 20  # More points = smoother circle
+        num_points = 32  # More points = smoother circle
         for i in range(num_points):
-            angle = i * (360 / num_points)
-            point = pygame.Vector2(0, -self.radius).rotate(angle) + self.position
+            t = i / num_points
+            angle = t * 2 * math.pi
+
+            # smoothly interpolated radius variation
+            varied_radius = self.radius * self.interpolate(t)
+            point = (
+                pygame.Vector2(0, -varied_radius).rotate(math.degrees(angle))
+                + self.position
+            )
             points.append(point)
         return points
 
