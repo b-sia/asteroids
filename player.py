@@ -95,3 +95,30 @@ class Player(CircleShape):
             right = Vector2(0, -1).rotate(90) * 10 / 1.5
             points = [pos + forward, pos - forward - right, pos - forward + right]
             pygame.draw.polygon(screen, "red", points, 2)
+
+    def handle_collision(self, asteroid):
+        collision_normal = self.position - asteroid.position
+        collision_normal = pygame.math.Vector2.normalize_ip(collision_normal)
+
+        relative_velocity = self.velocity - asteroid.velocity
+
+        restitution = 0.8  # 1 = perfect elasticity, 0 = inelastic (stick)
+        impulse_scalar = -(1 + restitution) * relative_velocity.dot(collision_normal)
+
+        # assume mass proportional to radius
+        total_mass = self.radius + asteroid.radius
+        self_mass_ratio = self.radius / total_mass
+        asteroid_mass_ratio = asteroid.radius / total_mass
+
+        # apply impulse to player and asteroid
+        self.velocity += collision_normal * impulse_scalar * asteroid_mass_ratio
+        asteroid.velocity -= collision_normal * impulse_scalar * self_mass_ratio
+
+        # separate objects to prevent sticking
+        overlap = (self.radius + asteroid.radius) - self.position.distance_to(
+            asteroid.position
+        )
+        if overlap > 0:
+            separation = collision_normal * overlap
+            self.position -= separation * 0.5
+            asteroid.position -= separation * 0.5
