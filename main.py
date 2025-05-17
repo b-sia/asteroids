@@ -75,6 +75,7 @@ def main():
         # Skip updates if game is over or paused
         if not game_state.is_game_over and not game_state.is_paused:
             updatable.update(dt)
+            game_state.update_difficulty()
 
             for asteroid in asteroid_group:
                 if game_state.player.collision(asteroid):

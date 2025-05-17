@@ -12,6 +12,8 @@ class GameState:
         self.sprite_groups = sprite_groups
         self.running = True
         self.player = None
+        self.speed_multiplier = 1.0
+        self.last_threshold = 0
         self.reset_game()
 
     def reset_game(self):
@@ -30,6 +32,18 @@ class GameState:
 
         self.is_game_over = False
         self.is_paused = False
+
+    def update_difficulty(self):
+        if self.player.score >= MAX_SCORE_THRESHOLD:
+            return
+
+        current_threshold = self.player.score // SCORE_THRESHOLD
+        if current_threshold > self.last_threshold:
+            self.speed_multiplier += SPEED_INCREASE
+            self.last_threshold = current_threshold
+
+            for asteroid in self.sprite_groups["asteroid_group"]:
+                asteroid.velocity *= 1 + SPEED_INCREASE
 
     def show_game_over_popup(self, screen):
         """Show game over popup with final score and options"""
