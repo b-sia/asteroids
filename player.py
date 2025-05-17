@@ -18,6 +18,7 @@ class Player(CircleShape):
         self.rotation_speed = 180  # degrees/s
         self.friction = 0.99  # dampens velocity
         self.angle = 0
+        self.timer = 0
 
     def rotate(self, direction: float, dt):
         """Rotate the player (direction: 1 for right, -1 for left)"""
@@ -38,6 +39,7 @@ class Player(CircleShape):
 
     def update(self, dt: float):
         """Update player position based on velocity"""
+        self.timer -= dt
         self.move(dt)
         self.screen_wrap()
 
@@ -76,4 +78,6 @@ class Player(CircleShape):
         return [a, b, c]
 
     def shoot(self):
-        projectile = Shot(self.position, self.angle)
+        if self.timer <= 0:
+            projectile = Shot(self.position.copy(), self.angle)
+            self.timer = PLAYER_SHOT_COOLDOWN
