@@ -5,6 +5,7 @@ from pygame import Vector2
 
 from circleshape import CircleShape
 from constants import *
+from shot import Shot
 
 
 class Player(CircleShape):
@@ -66,7 +67,6 @@ class Player(CircleShape):
         elif self.position.y > SCREEN_HEIGHT:
             self.position.y = 0
 
-    # in the player class
     def triangle(self):
         forward = Vector2(0, -1).rotate(self.angle)
         right = Vector2(0, -1).rotate(self.angle + 90) * self.radius / 1.5
@@ -74,3 +74,8 @@ class Player(CircleShape):
         b = self.position - forward * self.radius - right
         c = self.position - forward * self.radius + right
         return [a, b, c]
+
+    def shoot(self, angle):
+        projectile = Shot(self.position, angle)
+        projectile.velocity = Vector2(0, 1)
+        projectile.velocity *= PLAYER_SHOT_SPEED

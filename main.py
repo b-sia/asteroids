@@ -5,6 +5,7 @@ from asteroid import Asteroid
 from asteroid_field import AsteroidField
 from constants import *
 from player import Player
+from shot import Shot
 
 
 def main():
@@ -23,9 +24,11 @@ def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroid_group = pygame.sprite.Group()
+    shot_group = pygame.sprite.Group()
 
     # new Player instances add themselves to the groups
     Player.containers = [updatable, drawable]
+    Shot.containers = [updatable, drawable, shot_group]
     Asteroid.containers = [updatable, drawable, asteroid_group]
     AsteroidField.containers = [updatable]
 
@@ -41,6 +44,8 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                if event.key == pygame.K_SPACE:
+                    player.shoot(player.angle)
 
         screen.fill((0, 0, 0))
 
