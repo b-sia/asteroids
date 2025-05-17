@@ -72,11 +72,59 @@ class Asteroid(CircleShape):
         self.rotation %= 360
 
     def draw(self, surface, points=None):
-        # Rotate texture
-        rotated = pygame.transform.rotate(self.original_texture, self.rotation)
-        # Get position for centered drawing
+        if points is None:
+            points = self.triangle()
+
+        # Create a surface for the deformed asteroid
+        # important to make asteroid slightly bigger, else
+        # surface interpolation cannot be done, and you will
+        # have square asteroids :(
+        size = int(self.radius * 2.4)
+
+        deformed = pygame.Surface((size, size), pygame.SRCALPHA)
+
+        # Calculate center of the surface
+        center = pygame.Vector2(size / 2, size / 2)
+
+        # Map texture to deformed shape
+        for x in range(size):
+            for y in range(size):
+                pos = pygame.Vector2(x, y) - center
+                if pos.length() == 0:
+                    continue
+
+                # Calculate angle and distance for this pixel
+                angle = math.atan2(pos.y, pos.x)
+                if angle < 0:
+                    angle += 2 * math.pi
+                t = angle / (2 * math.pi)
+
+                # Get varied radius for deformation
+                varied_radius = self.radius * self.interpolate(t)
+                current_radius = pos.length()
+
+                if current_radius <= varied_radius:
+                    # scale to original texture's coordinate system
+                    ratio = current_radius / varied_radius
+
+                    # texture mapping
+                    normalized_pos = pos.normalize() * ratio * self.radius
+
+                    # convertes from [-radius, radius] to [0, 2*radius]
+                    tex_x = int(normalized_pos.x + self.radius)
+                    tex_y = int(normalized_pos.y + self.radius)
+
+                    # Only copy valid pixel positions
+                    if (
+                        0 <= tex_x < self.original_texture.get_width()
+                        and 0 <= tex_y < self.original_texture.get_height()
+                    ):
+                        color = self.original_texture.get_at((tex_x, tex_y))
+                        deformed.set_at((x, y), color)
+
+        # Rotate the deformed texture
+        rotated = pygame.transform.rotate(deformed, self.rotation)
         rect = rotated.get_rect(center=self.position)
-        # Draw with alpha blending
         surface.blit(rotated, rect)
 
     def split(self):

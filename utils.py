@@ -4,11 +4,17 @@ from opensimplex import OpenSimplex
 
 
 def generate_asteroid_texture(radius, seed=None):
-    """Generate a smooth, natural-looking asteroid texture using noise"""
+    """
+    Generate a smooth, natural-looking asteroid texture using noise
+
+    1.) Creates a noise generator with seed.
+    2.) Create fractal noise patterns with noise gen.
+    3.) Normalize noise, enhance contrast, create gray variation.
+    4.) Edge smoothing.
+    """
     size = int(radius * 2)
     surface = pygame.Surface((size, size), pygame.SRCALPHA)
 
-    # Create noise generator with random or specified seed
     noise_gen = OpenSimplex(seed=seed)
 
     # Create base circular mask
@@ -32,15 +38,23 @@ def generate_asteroid_texture(radius, seed=None):
                     amplitude *= 0.5
                     frequency *= 2
 
-                # Normalize noise to 0-1 range
+                # Normalize noise to 0-1 range and enhance contrast
                 noise_val = (noise_val + 1) * 0.5
+                noise_val = noise_val * 0.8 + 0.2
 
-                # Create color gradient from dark to light gray
-                color_val = int(noise_val * 128 + 64)
+                # Create more varied color gradient
+                base_color = 64
+                color_range = 160
+                color_val = int(base_color + noise_val * color_range)
 
-                # Smooth edge falloff
-                edge_falloff = 1.0 - (distance / radius) ** 0.5
-                alpha = int(255 * edge_falloff)
+                # Smoother edge falloff that preserves texture
+                edge_distance = distance / radius
+                if edge_distance < 0.8:  # sharp opacity
+                    alpha = 255
+                else:
+                    alpha = int(
+                        255 * (1.0 - (edge_distance - 0.8) / 0.2)
+                    )  # gradual transparency fade
 
                 surface.set_at((x, y), (color_val, color_val, color_val, alpha))
 
