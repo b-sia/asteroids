@@ -22,11 +22,21 @@ class Asteroid(CircleShape):
         self.control_points.append(self.control_points[0])
 
     def interpolate(self, t):
+        """
+        t: a value between 0 and 1 that represents progress around the asteroid's perimeter
+        (e.g. t=0.25 = 25% around the shape)
+
+        The segment maps the progress around the number of points.
+        The segment is split into the integer part and fraction part.
+        Integer part identifies which two control points to interpolate between.
+        Fractional part represents the interpolation between the two points.
+
+        Fractional part is replaced with a sigmoid-like curve interpolation,
+        then adjacent controlled points are combined using a smooth f.
+        """
         segment = t * self.num_control_points
         i = int(segment)
         f = segment - i
-
-        # smooth step function for organic transitions
         f = f * f * (3 - 2 * f)
 
         return self.control_points[i] * (1 - f) + self.control_points[i + 1] * f
