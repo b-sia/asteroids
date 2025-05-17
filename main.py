@@ -89,13 +89,6 @@ def main():
                         game_state.player.increase_score(asteroid.radius)
                         asteroid.split()
 
-        screen.fill((0, 0, 0))
-
-        # Draw all game objects
-        for sprite in drawable:
-            sprite.draw(screen, sprite.triangle())
-
-        updatable.update(dt)
         draw_state(game_state, screen, drawable)
 
         # control the frame rate
