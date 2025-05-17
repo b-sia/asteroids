@@ -20,6 +20,7 @@ class Player(CircleShape):
         self.angle = 0
         self.timer = 0
         self.lives = 5
+        self.score = 0
 
     def rotate(self, direction: float, dt):
         """Rotate the player (direction: 1 for right, -1 for left)"""
@@ -122,3 +123,17 @@ class Player(CircleShape):
             separation = collision_normal * overlap
             self.position -= separation * 0.5
             asteroid.position -= separation * 0.5
+
+    def increase_score(self, asteroid_size):
+        if asteroid_size <= 20:
+            self.score += 25
+        elif asteroid_size <= 40:
+            self.score += 100
+        else:
+            self.score += 250
+
+    def draw_score(self, screen):
+        font = pygame.font.Font(None, 36)
+        score_text = font.render(f"Score: {self.score}", True, "white")
+        score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 50))
+        screen.blit(score_text, score_rect)

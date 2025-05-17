@@ -63,8 +63,10 @@ def main():
 
             for shot in shot_group:
                 if shot.collision(asteroid):
+                    player.increase_score(asteroid.radius)
                     asteroid.split()
 
+        player.draw_score(screen)
         for sprite in drawable:
             sprite.draw(screen, sprite.triangle())
 
