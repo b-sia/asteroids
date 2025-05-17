@@ -82,22 +82,6 @@ def main():
 
         updatable.update(dt)
 
-        for asteroid in asteroid_group:
-            if game_state.player.collision(asteroid):
-                game_state.player.handle_collision(asteroid)
-                if game_state.player.hit():
-                    print("Game Over!")
-                    break
-                else:
-                    print(
-                        f"You have been hit! Lives remaining: {game_state.player.lives}"
-                    )
-
-            for shot in shot_group:
-                if shot.collision(asteroid):
-                    game_state.player.increase_score(asteroid.radius)
-                    asteroid.split()
-
         # Drawing
         screen.fill((0, 0, 0))
 
