@@ -46,6 +46,12 @@ def main():
 
         updatable.update(dt)
 
+        for asteroid in asteroid_group:
+            if player.collision(asteroid):
+                print("Game Over!")
+                running = False
+                break
+
         for sprite in drawable:
             sprite.draw(screen, sprite.triangle())
 
