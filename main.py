@@ -25,6 +25,20 @@ def initialize_sprite_groups():
     return updatable, drawable, asteroid_group, shot_group
 
 
+def draw_state(game_state, screen, drawable):
+    # Drawing
+    screen.fill((0, 0, 0))
+
+    # Draw all game objects
+    for sprite in drawable:
+        sprite.draw(screen, sprite.triangle())
+
+    # Draw UI elements
+    game_state.player.draw_score(screen)
+    game_state.player.draw_lives(screen)
+    pygame.display.flip()
+
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -66,6 +80,7 @@ def main():
                 if game_state.player.collision(asteroid):
                     game_state.player.handle_collision(asteroid)
                     if game_state.player.hit():
+                        draw_state(game_state, screen, drawable)
                         game_state.handle_game_over(screen)
                         break
 
@@ -81,18 +96,7 @@ def main():
             sprite.draw(screen, sprite.triangle())
 
         updatable.update(dt)
-
-        # Drawing
-        screen.fill((0, 0, 0))
-
-        # Draw all game objects
-        for sprite in drawable:
-            sprite.draw(screen, sprite.triangle())
-
-        # Draw UI elements
-        game_state.player.draw_score(screen)
-        game_state.player.draw_lives(screen)
-        pygame.display.flip()
+        draw_state(game_state, screen, drawable)
 
         # control the frame rate
         # doing clock caps the frame rate at 60FPS so
