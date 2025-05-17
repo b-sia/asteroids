@@ -1,6 +1,7 @@
 import math
 import random
 
+import numpy as np
 import pygame
 
 from src.core.circleshape import CircleShape
@@ -22,11 +23,19 @@ class Asteroid(CircleShape):
         # add first point to end to wrap the interpolation around
         self.control_points.append(self.control_points[0])
 
-        # Generate unique texture for this asteroid
-        self.texture = generate_asteroid_texture(radius, seed=random.randint(0, 1000))
-        self.original_texture = self.texture
+        # Generate unique texture with surface caching
+        self.cached_surface = None
+        self.last_points = None
+        self._setup_texture()
+
         self.rotation = random.uniform(0, 360)
         self.rotation_speed = random.uniform(-30, 30)  # degrees per second
+
+    def _setup_texture(self):
+        self.original_texture = generate_asteroid_texture(
+            self.radius, seed=random.randint(1, 1000)
+        )
+        self.cached_surface = None
 
     def interpolate(self, t):
         """
@@ -75,52 +84,62 @@ class Asteroid(CircleShape):
         if points is None:
             points = self.triangle()
 
-        # Create a surface for the deformed asteroid
-        # important to make asteroid slightly bigger, else
-        # surface interpolation cannot be done, and you will
-        # have square asteroids :(
-        size = int(self.radius * 2.4)
+        if self.cached_surface is None or self.last_points != points:
+            # Create a surface for the deformed asteroid
+            # important to make asteroid slightly bigger, else
+            # surface interpolation cannot be done, and you will
+            # have square asteroids :(
+            size = int(self.radius * 2.4)
 
-        deformed = pygame.Surface((size, size), pygame.SRCALPHA)
+            deformed = pygame.Surface((size, size), pygame.SRCALPHA)
 
-        # Calculate center of the surface
-        center = pygame.Vector2(size / 2, size / 2)
+            # Calculate center of the surface
+            center = pygame.Vector2(size / 2, size / 2)
 
-        # Map texture to deformed shape
-        for x in range(size):
-            for y in range(size):
-                pos = pygame.Vector2(x, y) - center
-                if pos.length() == 0:
-                    continue
+            # precalculate angles and radiuses for the shape
+            angles = []
+            radiuses = []
 
-                # Calculate angle and distance for this pixel
-                angle = math.atan2(pos.y, pos.x)
-                if angle < 0:
-                    angle += 2 * math.pi
+            for i in range(360):  # One degree steps
+                angle = math.radians(i)
                 t = angle / (2 * math.pi)
-
-                # Get varied radius for deformation
                 varied_radius = self.radius * self.interpolate(t)
-                current_radius = pos.length()
+                angles.append(angle)
+                radiuses.append(varied_radius)
 
-                if current_radius <= varied_radius:
-                    # scale to original texture's coordinate system
-                    ratio = current_radius / varied_radius
+            # Use numpy for faster array operations
+            x_coords = np.arange(size)
+            y_coords = np.arange(size)
+            xx, yy = np.meshgrid(x_coords, y_coords)
 
-                    # texture mapping
-                    normalized_pos = pos.normalize() * ratio * self.radius
+            # Calculate positions relative to center
+            pos_x = xx - center.x
+            pos_y = yy - center.y
+            distances = np.sqrt(pos_x**2 + pos_y**2)
+            angles = np.arctan2(pos_y, pos_x) % (2 * np.pi)
 
-                    # convertes from [-radius, radius] to [0, 2*radius]
-                    tex_x = int(normalized_pos.x + self.radius)
-                    tex_y = int(normalized_pos.y + self.radius)
+            # Map angles to pre-calculated radiuses
+            angle_indices = (angles * 180 / np.pi).astype(int)
+            varied_radiuses = np.array(radiuses)[angle_indices]
 
-                    # Only copy valid pixel positions
-                    if (
-                        0 <= tex_x < self.original_texture.get_width()
-                        and 0 <= tex_y < self.original_texture.get_height()
-                    ):
-                        color = self.original_texture.get_at((tex_x, tex_y))
-                        deformed.set_at((x, y), color)
+            # Create mask for valid pixels
+            mask = distances <= varied_radiuses
+
+            # Apply texture only where mask is True
+            for x, y in np.argwhere(mask):
+                ratio = distances[y][x] / varied_radiuses[y][x]
+                normalized_x = int(pos_x[y][x] * ratio + self.radius)
+                normalized_y = int(pos_y[y][x] * ratio + self.radius)
+
+                if (
+                    0 <= normalized_x < self.original_texture.get_width()
+                    and 0 <= normalized_y < self.original_texture.get_height()
+                ):
+                    color = self.original_texture.get_at((normalized_x, normalized_y))
+                    deformed.set_at((x, y), color)
+
+            self.cached_surface = deformed
+            self.last_points = points.copy()
 
         # Rotate the deformed texture
         rotated = pygame.transform.rotate(deformed, self.rotation)
