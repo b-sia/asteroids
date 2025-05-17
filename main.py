@@ -31,15 +31,21 @@ def main():
     pygame.display.set_caption("Asteroids")
     clock = pygame.time.Clock()
 
-    # Initialize game state and sprite groups
-    game_state = GameState()
     updatable, drawable, asteroid_group, shot_group = initialize_sprite_groups()
+    sprite_groups = {
+        "updatable": updatable,
+        "drawable": drawable,
+        "asteroid_group": asteroid_group,
+        "shot_group": shot_group,
+    }
+
+    # Initialize game state and sprite groups
+    game_state = GameState(sprite_groups)
 
     dt = 0
 
     # need to instantiate so that objects
     # are added to containers
-    player = Player(Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
     asteroid_field = AsteroidField()
 
     while game_state.running:
@@ -50,22 +56,22 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     game_state.running = False
                 if event.key == pygame.K_SPACE:
-                    player.shoot()
+                    game_state.player.shoot()
 
         # Skip updates if game is over or paused
         if not game_state.is_game_over and not game_state.is_paused:
             updatable.update(dt)
 
             for asteroid in asteroid_group:
-                if player.collision(asteroid):
-                    player.handle_collision(asteroid)
-                    if player.hit():
+                if game_state.player.collision(asteroid):
+                    game_state.player.handle_collision(asteroid)
+                    if game_state.player.hit():
                         game_state.handle_game_over(screen)
                         break
 
                 for shot in shot_group:
                     if shot.collision(asteroid):
-                        player.increase_score(asteroid.radius)
+                        game_state.player.increase_score(asteroid.radius)
                         asteroid.split()
 
         screen.fill((0, 0, 0))
@@ -77,18 +83,19 @@ def main():
         updatable.update(dt)
 
         for asteroid in asteroid_group:
-            if player.collision(asteroid):
-                player.handle_collision(asteroid)
-                if player.hit():
+            if game_state.player.collision(asteroid):
+                game_state.player.handle_collision(asteroid)
+                if game_state.player.hit():
                     print("Game Over!")
-                    running = False
                     break
                 else:
-                    print(f"You have been hit! Lives remaining: {player.lives}")
+                    print(
+                        f"You have been hit! Lives remaining: {game_state.player.lives}"
+                    )
 
             for shot in shot_group:
                 if shot.collision(asteroid):
-                    player.increase_score(asteroid.radius)
+                    game_state.player.increase_score(asteroid.radius)
                     asteroid.split()
 
         # Drawing
@@ -99,8 +106,8 @@ def main():
             sprite.draw(screen, sprite.triangle())
 
         # Draw UI elements
-        player.draw_score(screen)
-        player.draw_lives(screen)
+        game_state.player.draw_score(screen)
+        game_state.player.draw_lives(screen)
         pygame.display.flip()
 
         # control the frame rate

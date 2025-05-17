@@ -6,18 +6,28 @@ from player import Player
 
 
 class GameState:
-    def __init__(self):
+    def __init__(self, sprite_groups):
         self.is_game_over = False
         self.is_paused = False
+        self.sprite_groups = sprite_groups
         self.running = True
         self.player = None
         self.reset_game()
 
     def reset_game(self):
         """Reset the game state"""
+        # remove existing players
+        if self.player:
+            self.player.kill()
+
         # Create new player at center of screen
         start_pos = Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.player = Player(start_pos)
+
+        # Add player to sprite groups
+        self.sprite_groups["updatable"].add(self.player)
+        self.sprite_groups["drawable"].add(self.player)
+
         self.is_game_over = False
         self.is_paused = False
 
