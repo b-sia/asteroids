@@ -98,12 +98,12 @@ class Player(CircleShape):
 
     def handle_collision(self, asteroid):
         collision_normal = self.position - asteroid.position
-        collision_normal = pygame.math.Vector2.normalize_ip(collision_normal)
+        collision_normal.normalize_ip()
 
         relative_velocity = self.velocity - asteroid.velocity
 
         restitution = 0.8  # 1 = perfect elasticity, 0 = inelastic (stick)
-        impulse_scalar = -(1 + restitution) * relative_velocity.dot(collision_normal)
+        impulse_scalar = -(1 + restitution) * relative_velocity * collision_normal
 
         # assume mass proportional to radius
         total_mass = self.radius + asteroid.radius

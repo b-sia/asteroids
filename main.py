@@ -53,6 +53,7 @@ def main():
 
         for asteroid in asteroid_group:
             if player.collision(asteroid):
+                player.handle_collision(asteroid)
                 if player.hit():
                     print("Game Over!")
                     running = False
