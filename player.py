@@ -77,5 +77,3 @@ class Player(CircleShape):
 
     def shoot(self):
         projectile = Shot(self.position, self.angle)
-        projectile.velocity = Vector2(0, 1)
-        projectile.velocity *= PLAYER_SHOT_SPEED
