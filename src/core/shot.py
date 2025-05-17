@@ -3,8 +3,13 @@ import math
 import pygame
 from pygame import Vector2
 
-from circleshape import CircleShape
-from constants import BULLET_RADIUS, PLAYER_SHOT_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH
+from src.core.circleshape import CircleShape
+from src.utils.constants import (
+    BULLET_RADIUS,
+    PLAYER_SHOT_SPEED,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+)
 
 
 class Shot(CircleShape):

@@ -1,8 +1,8 @@
 import pygame
 from pygame import Vector2
 
-from constants import *
-from player import Player
+from src.core.player import Player
+from src.utils.constants import *
 
 
 class GameState:

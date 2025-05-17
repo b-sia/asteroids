@@ -3,9 +3,9 @@ import math
 import pygame
 from pygame import Vector2
 
-from circleshape import CircleShape
-from constants import *
-from shot import Shot
+from src.core.circleshape import CircleShape
+from src.core.shot import Shot
+from src.utils.constants import *
 
 
 class Player(CircleShape):

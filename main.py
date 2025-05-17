@@ -1,12 +1,12 @@
 import pygame
 from pygame import Vector2
 
-from asteroid import Asteroid
-from asteroid_field import AsteroidField
-from constants import *
-from game_state import GameState
-from player import Player
-from shot import Shot
+from src.core.asteroid import Asteroid
+from src.core.asteroid_field import AsteroidField
+from src.core.game_state import GameState
+from src.core.player import Player
+from src.core.shot import Shot
+from src.utils.constants import *
 
 
 def initialize_sprite_groups():

@@ -3,9 +3,9 @@ import random
 
 import pygame
 
-from circleshape import CircleShape
-from constants import ASTEROID_MIN_RADIUS
-from utils import generate_asteroid_texture
+from src.core.circleshape import CircleShape
+from src.utils.constants import ASTEROID_MIN_RADIUS
+from src.utils.utils import generate_asteroid_texture
 
 
 class Asteroid(CircleShape):
