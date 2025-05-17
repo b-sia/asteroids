@@ -45,7 +45,7 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 if event.key == pygame.K_SPACE:
-                    player.shoot(player.angle)
+                    player.shoot()
 
         screen.fill((0, 0, 0))
 
