@@ -5,6 +5,7 @@ import pygame
 
 from circleshape import CircleShape
 from constants import ASTEROID_MIN_RADIUS
+from utils import generate_asteroid_texture
 
 
 class Asteroid(CircleShape):
@@ -20,6 +21,12 @@ class Asteroid(CircleShape):
 
         # add first point to end to wrap the interpolation around
         self.control_points.append(self.control_points[0])
+
+        # Generate unique texture for this asteroid
+        self.texture = generate_asteroid_texture(radius, seed=random.randint(0, 1000))
+        self.original_texture = self.texture
+        self.rotation = random.uniform(0, 360)
+        self.rotation_speed = random.uniform(-30, 30)  # degrees per second
 
     def interpolate(self, t):
         """
@@ -61,6 +68,16 @@ class Asteroid(CircleShape):
 
     def update(self, dt):
         self.position += self.velocity * dt
+        self.rotation += self.rotation_speed * dt
+        self.rotation %= 360
+
+    def draw(self, surface, points=None):
+        # Rotate texture
+        rotated = pygame.transform.rotate(self.original_texture, self.rotation)
+        # Get position for centered drawing
+        rect = rotated.get_rect(center=self.position)
+        # Draw with alpha blending
+        surface.blit(rotated, rect)
 
     def split(self):
         # prevents multiple splitting

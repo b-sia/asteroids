@@ -1,3 +1,5 @@
 pygame
 ruff
 pre-commit
+numpy
+opensimplex
