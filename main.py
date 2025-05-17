@@ -53,9 +53,12 @@ def main():
 
         for asteroid in asteroid_group:
             if player.collision(asteroid):
-                print("Game Over!")
-                running = False
-                break
+                if player.hit():
+                    print("Game Over!")
+                    running = False
+                    break
+                else:
+                    print(f"You have been hit! Lives remaining: {player.lives}")
 
             for shot in shot_group:
                 if shot.collision(asteroid):
@@ -64,6 +67,7 @@ def main():
         for sprite in drawable:
             sprite.draw(screen, sprite.triangle())
 
+        player.draw_lives(screen)
         pygame.display.flip()
 
         # control the frame rate

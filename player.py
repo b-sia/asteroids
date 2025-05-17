@@ -19,6 +19,7 @@ class Player(CircleShape):
         self.friction = 0.99  # dampens velocity
         self.angle = 0
         self.timer = 0
+        self.lives = 5
 
     def rotate(self, direction: float, dt):
         """Rotate the player (direction: 1 for right, -1 for left)"""
@@ -81,3 +82,16 @@ class Player(CircleShape):
         if self.timer <= 0:
             projectile = Shot(self.position.copy(), self.angle)
             self.timer = PLAYER_SHOT_COOLDOWN
+
+    def hit(self):
+        self.lives -= 1
+        return self.lives <= 0
+
+    def draw_lives(self, screen):
+        for i in range(self.lives):
+            pos = Vector2(30 + i * 30, 30)
+
+            forward = Vector2(0, -1).rotate(0) * 10  # Smaller radius
+            right = Vector2(0, -1).rotate(90) * 10 / 1.5
+            points = [pos + forward, pos - forward - right, pos - forward + right]
+            pygame.draw.polygon(screen, "red", points, 2)
